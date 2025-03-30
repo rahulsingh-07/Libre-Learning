@@ -12,7 +12,6 @@ const BookDetails = () => {
 
   const fetchBooksFromFirestore = async () => {
     try {
-      
       const q = query(
         collection(db, "books"), 
         where("branch", "==", branch),
@@ -49,9 +48,8 @@ const BookDetails = () => {
   
   useEffect(() => {
     fetchBooksFromFirestore();
-  }, [branch]); // Fetch books whenever the branch changes
+  }, [branch]);
 
-  // Filter books by search term
   useEffect(() => {
     const filtered = booksData.filter(book =>
       book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -73,30 +71,38 @@ const BookDetails = () => {
         />
       </div>
 
+      {filteredBooks.length === 0 && searchTerm && (
+        <div className="text-center text-red-600 font-semibold">
+          No books found. <a 
+            href={`https://www.google.com/search?q=${encodeURIComponent(searchTerm + " book")}`} 
+            target="_blank" rel="noopener noreferrer" 
+            className="text-blue-500 underline">Search on Google</a>
+        </div>
+      )}
+
       {error && <div>{error}</div>}
 
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 p-4 sm:px-12'>
         {filteredBooks.length > 0 && filteredBooks.map((book, index) => (
           <div key={index} className="shadow-2xl flex gap-2 relative border border-gray-300 bg-[#c48443] p-2 w-full rounded-lg transition transform hover:scale-105 text-xs sm:text-base">
-            
-              <div className="flex justify-center ">
-                <img className="rounded-lg shadow-md max-w-full h-auto" src={book.coverImage} alt={book.title} />
-              </div>
+            <div className="flex justify-center ">
+              <img className="rounded-lg shadow-md max-w-full h-auto" src={book.coverImage} alt={book.title} />
+            </div>
             <div>
-            <h2 className='font-bold text-lg mb-2'>{book.title}</h2>
-            <p className='text-gray-700'><strong>Authors:</strong> {book.authors.join(", ")}</p>
-            <p className='text-gray-700'><strong>Publish Date:</strong> {book.publishDate}</p>
-            <p className='text-gray-700'><strong>Number of Pages:</strong> {book.pageCount}</p>
-            {book.pdfUrl && (
-              <div className='flex justify-center my-4'>
-                <a
-                  className='bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 transition duration-300 ease-in-out'
-                  href={book.pdfUrl} target="_blank" rel="noopener noreferrer"
-                >
-                  Download PDF
-                </a>
-              </div>
-            )}
+              <h2 className='font-bold text-lg mb-2'>{book.title}</h2>
+              <p className='text-gray-700'><strong>Authors:</strong> {book.authors.join(", ")}</p>
+              <p className='text-gray-700'><strong>Publish Date:</strong> {book.publishDate}</p>
+              <p className='text-gray-700'><strong>Number of Pages:</strong> {book.pageCount}</p>
+              {book.pdfUrl && (
+                <div className='flex justify-center my-4'>
+                  <a
+                    className='bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 transition duration-300 ease-in-out'
+                    href={book.pdfUrl} target="_blank" rel="noopener noreferrer"
+                  >
+                    Download PDF
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         ))}
